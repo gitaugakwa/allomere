@@ -1,0 +1,61 @@
+{
+	"build": {
+		"beforeDevCommand": "pnpm dev",
+		"beforeBuildCommand": "pnpm build",
+		"devPath": "http://localhost:1420",
+		"distDir": "../dist"
+	},
+	"package": {
+		"productName": "Allomere",
+		"version": "0.0.0"
+	},
+	"tauri": {
+		"allowlist": {
+			"all": false,
+			"dialog": {
+				"all": false,
+				"ask": true,
+				"confirm": true,
+				"message": true,
+				"open": true,
+				"save": true
+			},
+			"shell": {
+				"all": false,
+				"open": true
+			}
+		},
+		"bundle": {
+			"active": true,
+			"targets": "all",
+			"identifier": "com.allomere.dev",
+			"icon": [
+				"icons/32x32.png",
+				"icons/128x128.png",
+				"icons/128x128@2x.png",
+				"icons/icon.icns",
+				"icons/icon.ico"
+			],
+			"windows": {
+				"webviewInstallMode": {
+					"type": "offlineInstaller"
+				}
+			},
+			"resources": [
+				"C:/Users/DOUG/.pyenv/pyenv-win/versions/3.9.13/python39.dll"
+			]
+		},
+		"security": {
+			"csp": null
+		},
+		"windows": [
+			{
+				"fullscreen": false,
+				"resizable": true,
+				"title": "Allomere",
+				"width": 1280,
+				"height": 720
+			}
+		]
+	}
+}

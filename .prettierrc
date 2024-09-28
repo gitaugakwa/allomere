@@ -1,0 +1,8 @@
+{
+	"tabWidth": 4,
+	"useTabs": true,
+	"trailingComma": "all",
+	"endOfLine": "crlf",
+	"quoteProps": "preserve",
+	"plugins": ["prettier-plugin-tailwindcss"]
+}

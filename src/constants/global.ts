@@ -1,0 +1,6 @@
+enum GLOBAL_APP_STATE_MACRO {
+  TRACKS = 0,
+  CHECK,
+}
+
+export default GLOBAL_APP_STATE_MACRO;

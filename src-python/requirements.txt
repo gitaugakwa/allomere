@@ -1,0 +1,9 @@
+datasets
+librosa
+maturin
+sentencepiece
+sounddevice
+transformers
+torch
+torchvision
+torchaudio
