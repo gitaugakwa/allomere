@@ -1,5 +1,6 @@
 use anyhow::{anyhow, Result};
 use numpy::PyArray2;
+use pyo3::ffi::c_str;
 use pyo3::prelude::*;
 use std::time::{Duration, Instant};
 
@@ -10,11 +11,11 @@ pub fn get_beats(path: &str, sample_rate: u32) -> (Vec<f32>, Vec<u32>) {
     let py_result: Result<(Vec<f32>, Vec<u32>)> = Python::with_gil(|py| {
         println!("Downloading and loading models...");
 
-        let module = PyModule::from_code_bound(
+        let module = PyModule::from_code(
             py,
-            include_str!("../../../src-python/src/beats.py"),
-            "beats.py",
-            "beats",
+            c_str!(include_str!("../../../src-python/src/beats.py")),
+            c_str!("beats.py"),
+            c_str!("beats"),
         )?;
 
         let get_beats: Py<PyAny> = module.getattr("get_beats")?.into();

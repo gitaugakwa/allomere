@@ -11,21 +11,24 @@ edition = "2021"
 
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1.7.1", features = [ "dialog-ask", "dialog-save", "dialog-confirm", "dialog-open", "dialog-message", "shell-open"] }
+tauri = { version = "2.5.1", features = [] }
 serde = { version = "1.0", features = ["derive", "rc"] }
 serde_json = "1.0"
-rodio = { version = "0.19.0", features = ["symphonia-flac"] }
-anyhow = "1.0.86"
-pyo3 = { version = "0.21.0", features = ["auto-initialize"] }
+rodio = { version = "0.20.1", features = ["symphonia-flac"] }
+anyhow = "1.0.98"
+pyo3 = { version = "0.23.3", features = ["auto-initialize"] }
 derivative = "2.2.0"
 parking_lot = { version = "0.12.3", features = ["hardware-lock-elision"] }
-tokio = { version = "1.38.1", features = ["full"] }
+tokio = { version = "1.45.0", features = ["full"] }
 lazy_static = "1.5.0"
 usearch = { git = "https://github.com/jbrummack/usearch.git", version = "2.15.1", features = ["simsimd"] }
-numpy = "0.21.0"
+numpy = "0.23.0"
+tauri-plugin = "2.2"
+tauri-plugin-dialog = "2.2"
+tauri-plugin-shell = "2.2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

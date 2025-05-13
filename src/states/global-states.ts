@@ -15,7 +15,7 @@ const emit = (key: number, value: any) => {
 };
 
 export const useGlobalAppStore = create(
-	subscribeWithSelector<GlobalAppState>(() => ({
+	subscribeWithSelector<GlobalAppState>((set) => ({
 		tracks: [],
 		check: false,
 		setTracks: (tracks: Array<{ name: string }>) => {
@@ -23,6 +23,14 @@ export const useGlobalAppStore = create(
 		},
 		setCheck: (check: boolean) => {
 			emit(GLOBAL_APP_STATE_MACRO.CHECK, check);
+		},
+		currentClipFocus: null,
+		currentClipFocusAudioData: null,
+		setCurrentClipFocus: (clip: any) => {
+			set({ currentClipFocus: clip });
+		},
+		setCurrentClipFocusAudioData: (data: any) => {
+			set({ currentClipFocusAudioData: data });
 		},
 	})),
 );

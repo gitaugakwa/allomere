@@ -19,4 +19,10 @@ export interface GlobalAppState {
 
 	setTracks: (tracks: Array<{ name: string }>) => void;
 	setCheck: (check: boolean) => void;
+
+	currentClipFocus: null | any
+	currentClipFocusAudioData: null | any
+
+	setCurrentClipFocus: (clip: any) => void;
+	setCurrentClipFocusAudioData: (data: any) => void;
 }

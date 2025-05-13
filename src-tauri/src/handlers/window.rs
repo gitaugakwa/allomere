@@ -1,10 +1,10 @@
 use crate::states;
-use tauri::{Manager, State, Window};
+use tauri::{Manager, State, WebviewWindow, Window};
 
 use super::audio;
 
 #[tauri::command]
-pub fn refresh(window: Window) {
+pub fn refresh(window: WebviewWindow) {
     let handle = window.app_handle();
 
     let global_app_state: State<states::GlobalAppState> = handle.state();
@@ -14,12 +14,12 @@ pub fn refresh(window: Window) {
 
     let tracks = global_app_state.tracks.lock();
 
-    states::emit_state_sync("tracks", &*tracks, &window);
-    states::emit_state_sync("playback", playback_state.inner(), &window);
+    let _ = states::emit_state_sync("tracks", &*tracks, &window);
+    let _ = states::emit_state_sync("playback", playback_state.inner(), &window);
 }
 
 #[tauri::command]
-pub fn open_file(window: Window, payload: states::window::OpenFilePayload) {
+pub fn open_file(window: WebviewWindow, payload: states::window::OpenFilePayload) {
     let handle = window.app_handle();
 
     let global_app_state: State<states::GlobalAppState> = handle.state();
@@ -35,7 +35,7 @@ pub fn open_file(window: Window, payload: states::window::OpenFilePayload) {
             Some(track) => {
                 let clip = states::playback::Clip::new(path);
                 track.add_clip(clip);
-                states::emit_state_sync("tracks", &*tracks, &window);
+                let _ = states::emit_state_sync("tracks", &*tracks, &window);
             }
             _ => {}
         },

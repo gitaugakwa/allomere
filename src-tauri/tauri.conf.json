@@ -1,61 +1,48 @@
 {
+	"productName": "Allomere",
+	"mainBinaryName": "Allomere",
+	"version": "0.0.0",
+	"identifier": "com.allomere.dev",
 	"build": {
 		"beforeDevCommand": "pnpm dev",
 		"beforeBuildCommand": "pnpm build",
-		"devPath": "http://localhost:1420",
-		"distDir": "../dist"
+		"frontendDist": "../dist",
+		"devUrl": "http://localhost:1420"
 	},
-	"package": {
-		"productName": "Allomere",
-		"version": "0.0.0"
-	},
-	"tauri": {
-		"allowlist": {
-			"all": false,
-			"dialog": {
-				"all": false,
-				"ask": true,
-				"confirm": true,
-				"message": true,
-				"open": true,
-				"save": true
-			},
-			"shell": {
-				"all": false,
-				"open": true
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"resources": [
+			"C:/Users/DOUG/.pyenv/pyenv-win/versions/3.10.7/python310.dll"
+		],
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"windows": {
+			"webviewInstallMode": {
+				"type": "offlineInstaller"
 			}
-		},
-		"bundle": {
-			"active": true,
-			"targets": "all",
-			"identifier": "com.allomere.dev",
-			"icon": [
-				"icons/32x32.png",
-				"icons/128x128.png",
-				"icons/128x128@2x.png",
-				"icons/icon.icns",
-				"icons/icon.ico"
-			],
-			"windows": {
-				"webviewInstallMode": {
-					"type": "offlineInstaller"
-				}
-			},
-			"resources": [
-				"C:/Users/DOUG/.pyenv/pyenv-win/versions/3.9.13/python39.dll"
-			]
-		},
-		"security": {
-			"csp": null
-		},
+		}
+	},
+	"plugins": {},
+	"app": {
 		"windows": [
 			{
 				"fullscreen": false,
 				"resizable": true,
 				"title": "Allomere",
 				"width": 1280,
-				"height": 720
+				"height": 720,
+				"useHttpsScheme": true
 			}
-		]
+		],
+		"security": {
+			"csp": null
+		}
 	}
 }
+

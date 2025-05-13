@@ -1,5 +1,5 @@
 import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 
@@ -7,10 +7,18 @@ import { Button } from "@/components/ui/button";
 import { map } from "lodash-es";
 import { HiOutlinePause, HiOutlinePlay } from "react-icons/hi2";
 import { subscribeStateSync, useGlobalAppStore } from "./states/global-states";
+import { Clip } from "./components/clip";
+import { ClipFocusSection } from "./components/clip-focus";
+
+
 
 listen("openFile", (e) => {
 	console.log(e.payload);
 	console.log("file selected");
+});
+listen("clipProcessing", (e) => {
+	console.log(e.payload);
+	console.log("clip processing");
 });
 
 export function animationInterval(
@@ -39,7 +47,7 @@ export function animationInterval(
 	scheduleFrame(start);
 }
 
-function getTextWidth(text: string, font?: any) {
+export function getTextWidth(text: string, font?: any) {
 	const canvas = document.createElement("canvas");
 	const context = canvas.getContext("2d");
 
@@ -56,7 +64,7 @@ const SecondsMS = 1 * 1000;
 const MinutesMS = 60 * SecondsMS;
 const HoursMS = 60 * MinutesMS;
 
-const SECOND_SCALE = 10;
+export const SECOND_SCALE = 10;
 
 const Duration: FC<{}> = () => {
 	const isPaused = useGlobalAppStore((store) => store.playback?.isPaused);
@@ -123,21 +131,21 @@ const Duration: FC<{}> = () => {
 	);
 };
 
-const TickBar: FC<{}> = () => {
+export const TickBar: FC<{scale?:number}> = ({scale = 1}) => {
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	const textSize = getTextWidth("00:00:00");
 	const timeSize = textSize + 10 * 2;
 
-	const interval = Math.ceil(timeSize / SECOND_SCALE);
+	const interval = Math.ceil(timeSize / (SECOND_SCALE * scale));
 	const sampleRate = useGlobalAppStore((store) => store.playback?.sampleRate);
 
 	const [ticks, setTicks] = useState<number[]>([]);
-	const [width, setwidth] = useState(0);
+	const [width, setWidth] = useState(0);
 
 	useEffect(() => {
 		const observer = new ResizeObserver((entries) => {
-			setwidth(entries[0].contentRect.width);
+			setWidth(entries[0].contentRect.width);
 		});
 		ref.current && observer.observe(ref.current);
 
@@ -146,7 +154,7 @@ const TickBar: FC<{}> = () => {
 
 	useEffect(() => {
 		const localTicks = [];
-		for (let i = 0; i < (width ?? 0) / SECOND_SCALE; i += interval) {
+		for (let i = 0; i < (width ?? 0) / (SECOND_SCALE * scale); i += interval) {
 			localTicks.push(i);
 		}
 		setTicks(localTicks);
@@ -159,7 +167,7 @@ const TickBar: FC<{}> = () => {
 			const rect = ref.current?.getBoundingClientRect();
 			var x = event.clientX - (rect?.left ?? 0); //x position within the element.
 
-			const time = x / SECOND_SCALE;
+			const time = x / (SECOND_SCALE * scale);
 			const sample = time * (sampleRate ?? 0);
 			console.log({ time, sample });
 			await invoke("try_seek", { pos: time });
@@ -171,7 +179,7 @@ const TickBar: FC<{}> = () => {
 		<div
 			ref={ref}
 			onClick={(...args) => onClick(...args)}
-			className="relative table-row"
+			className="relative w-full col-span-full"
 		>
 			{map(ticks, (tick) => {
 				let seconds = tick;
@@ -185,12 +193,12 @@ const TickBar: FC<{}> = () => {
 				return (
 					<>
 						<div
-							className="absolute h-1/2 w-[1.5px] bg-black"
-							style={{ left: tick * SECOND_SCALE }}
+							className="absolute h-1/2 border-[0.75px] border-black bg-black"
+							style={{ left: tick * (SECOND_SCALE * scale) }}
 						/>
 						<span
 							className="absolute bottom-0"
-							style={{ left: tick * SECOND_SCALE }}
+							style={{ left: tick * (SECOND_SCALE * scale) }}
 						>
 							{formattedM}:{formattedS}
 						</span>
@@ -201,7 +209,7 @@ const TickBar: FC<{}> = () => {
 	);
 };
 
-const Playhead: FC<{}> = () => {
+export const Playhead: FC<{scale?:number}> = ({scale = 1}) => {
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	const [controller, setController] = useState(new AbortController());
@@ -224,18 +232,18 @@ const Playhead: FC<{}> = () => {
 		ref.current && ref.current.classList.add("transition-none");
 
 		const seekTime = performance.now();
-		setPlaybackHeadPosition(updatedTotalFrames * SECOND_SCALE);
+		setPlaybackHeadPosition(updatedTotalFrames * (SECOND_SCALE * scale));
 		if (isPaused == false) {
 			setTimeout(() => {
 				const diff = lastHeartbeat - seekTime;
 				if (Math.abs(diff) <= 1000) {
 					if (diff <= 0) {
 						setPlaybackHeadPosition(
-							(pos) => pos + (diff / 1000 + 1) * SECOND_SCALE,
+							(pos) => pos + (diff / 1000 + 1) * (SECOND_SCALE * scale),
 						);
 					} else {
 						setPlaybackHeadPosition(
-							(pos) => pos + (diff / 1000) * SECOND_SCALE,
+							(pos) => pos + (diff / 1000) * (SECOND_SCALE * scale),
 						);
 					}
 				}
@@ -247,9 +255,9 @@ const Playhead: FC<{}> = () => {
 	useEffect(() => {
 		if (isPaused == false) {
 			const controller = new AbortController();
-			setController(controller);
+			setController((_) => {_.abort(); return controller});
 
-			setPlaybackHeadPosition((pos) => pos + SECOND_SCALE);
+			setPlaybackHeadPosition((pos) => pos + (SECOND_SCALE * scale));
 			ref.current && ref.current.classList.remove("transition-none");
 
 			animationInterval(
@@ -257,7 +265,7 @@ const Playhead: FC<{}> = () => {
 				controller.signal,
 				(_: DOMHighResTimeStamp) => {
 					setLastHeartbeat(performance.now());
-					setPlaybackHeadPosition((pos) => pos + SECOND_SCALE);
+					setPlaybackHeadPosition((pos) => pos + (SECOND_SCALE * scale));
 				},
 			);
 		} else if (isPaused == true) {
@@ -268,7 +276,7 @@ const Playhead: FC<{}> = () => {
 
 			pauseTime = Number.isNaN(pauseTime) ? 0 : pauseTime;
 
-			setPlaybackHeadPosition(pauseTime * SECOND_SCALE);
+			setPlaybackHeadPosition(pauseTime * (SECOND_SCALE * scale));
 		}
 		// return () => {
 		// 	controller.abort();
@@ -366,29 +374,14 @@ function App() {
 							{map(tracks, (track) => {
 								return (
 									<div className="flex pr-[50vw]">
-										{map(track.clips, (clip) => {
-											const width =
-												(clip.audio.length /
-													clip.audio.sampleRate) *
-												SECOND_SCALE;
-											return (
-												<div
-													className="inline-block h-full min-w-0 shrink-0 bg-gray-500 p-1"
-													style={{ width }}
-												>
-													<span className="sticky left-1">
-														{clip.name}
-													</span>
-												</div>
-											);
-										})}
+										{map(track.clips, (clip, i) => <Clip clip={clip} key={i} />)}
 									</div>
 								);
 							})}
 						</div>
 					</div>
 				</div>
-				<div></div>
+				<ClipFocusSection />
 			</div>
 		</div>
 	);

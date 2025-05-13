@@ -14,6 +14,7 @@ from typing import List
 
 def get_audio_features(audio: List[np.ndarray], sample_rate: int):
     start_time = time.time()  # Record the start time
+    # audio.
 
     # dataset = load_dataset("ashraq/esc50")
     # audio = [dataset["train"]["audio"][-1]["array"]]
@@ -48,4 +49,4 @@ if __name__ == '__main__':
     dataset = load_dataset("ashraq/esc50")
     audio = dataset["train"]["audio"][-1]["array"]
     sample_rate = dataset["train"]["audio"][-1]["sampling_rate"]
-    print(len(get_audio_features(audio=[audio], sample_rate=sample_rate)[0]))
+    print((get_audio_features(audio=[audio], sample_rate=sample_rate)[0]))
